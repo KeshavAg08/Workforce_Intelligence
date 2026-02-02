@@ -1,0 +1,125 @@
+{
+    "IT": [
+        {
+            "title": "Software Engineer",
+            "core_skills": [
+                "Python",
+                "Java",
+                "Data Structures",
+                "Algorithms",
+                "Git",
+                "SQL"
+            ]
+        },
+        {
+            "title": "Data Scientist",
+            "core_skills": [
+                "Python",
+                "Machine Learning",
+                "Statistics",
+                "SQL",
+                "Pandas",
+                "NumPy"
+            ]
+        },
+        {
+            "title": "Cloud Architect",
+            "core_skills": [
+                "AWS",
+                "Docker",
+                "Kubernetes",
+                "Networking",
+                "Terraform",
+                "Security"
+            ]
+        }
+    ],
+    "Healthcare": [
+        {
+            "title": "Medical Analyst",
+            "core_skills": [
+                "Health Informatics",
+                "Data Analysis",
+                "SQL",
+                "HIPAA",
+                "Statistics"
+            ]
+        },
+        {
+            "title": "Clinical Researcher",
+            "core_skills": [
+                "Research Design",
+                "Data Collection",
+                "Medical Writing",
+                "Bioinformatics",
+                "Regulations"
+            ]
+        }
+    ],
+    "Manufacturing": [
+        {
+            "title": "Operations Manager",
+            "core_skills": [
+                "Supply Chain",
+                "Lean Manufacturing",
+                "Six Sigma",
+                "Project Management",
+                "ERP"
+            ]
+        },
+        {
+            "title": "Process Engineer",
+            "core_skills": [
+                "CAD",
+                "Materials Science",
+                "Quality Control",
+                "Automation",
+                "PLC"
+            ]
+        }
+    ],
+    "EV": [
+        {
+            "title": "Battery Engineer",
+            "core_skills": [
+                "Electrochemistry",
+                "Battery Management Systems",
+                "Thermal Modeling",
+                "Matlab",
+                "Materials"
+            ]
+        },
+        {
+            "title": "EV Powertrain Engineer",
+            "core_skills": [
+                "Electric Motors",
+                "Power Electronics",
+                "Control Systems",
+                "Simulink",
+                "C++"
+            ]
+        }
+    ],
+    "Finance": [
+        {
+            "title": "Financial Analyst",
+            "core_skills": [
+                "Financial Modeling",
+                "Excel",
+                "Valuation",
+                "Accounting",
+                "Data Analysis"
+            ]
+        },
+        {
+            "title": "Risk Manager",
+            "core_skills": [
+                "Risk Assessment",
+                "Statistics",
+                "Financial Regulation",
+                "SQL",
+                "Reporting"
+            ]
+        }
+    ]
+}

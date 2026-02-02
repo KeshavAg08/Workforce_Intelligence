@@ -1,0 +1,144 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Reference UI Palette - Deep Purple/Cyber */
+    --background: 260 30% 12%;
+    --foreground: 210 40% 98%;
+    --card: 260 25% 18%;
+    --card-foreground: 210 40% 98%;
+    --popover: 260 25% 18%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 280 75% 60%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 260 20% 25%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 260 20% 25%;
+    --muted-foreground: 260 10% 70%;
+    --accent: 280 75% 60%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 260 30% 30%;
+    --input: 260 30% 25%;
+    --ring: 280 75% 60%;
+    --radius: 1rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    background-image:
+      radial-gradient(circle at 15% 50%, rgba(120, 50, 255, 0.08), transparent 25%),
+      radial-gradient(circle at 85% 30%, rgba(200, 50, 200, 0.08), transparent 25%);
+  }
+}
+
+/* Premium UI Utilities */
+.glass-card {
+  @apply bg-card/40 backdrop-blur-xl border border-white/5 shadow-2xl;
+  background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
+}
+
+.glow-hover {
+  @apply transition-all duration-500 hover:shadow-[0_0_30px_-5px_var(--glow-color)];
+}
+
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-white/50;
+}
+
+.gradient-pill {
+  @apply bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg shadow-purple-500/20;
+}
+
+.industry-card-hover {
+  @apply transition-all duration-500 hover:bg-white/[0.05] hover:border-white/20 hover:-translate-y-2;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Auth Sliding Overlay Styles */
+.auth-container {
+  @apply relative w-full overflow-hidden rounded-[2.5rem] bg-card/30 backdrop-blur-3xl border border-white/10 shadow-[0_0_50px_-12px_#00000080];
+  aspect-ratio: 16/9;
+  max-width: 1000px;
+  min-height: 600px;
+}
+
+.auth-form-container {
+  @apply absolute top-0 h-full transition-all duration-700 ease-in-out w-1/2 flex flex-col items-center justify-center p-12 z-[1];
+}
+
+.auth-overlay-container {
+  @apply absolute top-0 left-1/2 w-1/2 h-full overflow-hidden transition-all duration-700 ease-in-out z-[100] rounded-[2.5rem];
+}
+
+.auth-overlay {
+  @apply bg-gradient-to-br from-purple-600 to-pink-600 text-white relative -left-full h-full w-[200%] transform transition-all duration-700 ease-in-out;
+}
+
+.auth-overlay-panel {
+  @apply absolute flex flex-col items-center justify-center p-12 text-center top-0 h-full w-1/2 transform transition-all duration-700 ease-in-out;
+}
+
+.auth-input {
+  @apply w-full bg-white/5 border border-white/10 rounded-3xl px-6 py-4 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all mb-4;
+}
+
+.auth-button {
+  @apply px-10 py-4 rounded-3xl bg-white text-purple-600 font-black uppercase tracking-widest text-xs hover:scale-105 active:scale-95 transition-all shadow-xl;
+}
+
+.auth-button-outline {
+  @apply px-10 py-4 rounded-3xl border-2 border-white text-white font-black uppercase tracking-widest text-xs hover:bg-white hover:text-purple-600 transition-all mt-8;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradient 3s ease infinite;
+}
+
+.right-panel-active .auth-overlay-container {
+  transform: translateX(-100%);
+}
+
+.right-panel-active .auth-overlay {
+  transform: translateX(50%);
+}
