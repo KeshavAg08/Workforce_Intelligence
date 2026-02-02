@@ -252,7 +252,7 @@ export default function App() {
               <p className="font-bold text-xs uppercase tracking-widest opacity-40">No Industry Data Available</p>
             </div>
           ) : view === 'student' ? (
-            <StudentDashboard data={data} setIndustry={setIndustry} authenticatedFetch={authenticatedFetch} />
+            <StudentDashboard data={data} setIndustry={setIndustry} />
           ) : (
             <AdminDashboard data={data} year={year} />
           )

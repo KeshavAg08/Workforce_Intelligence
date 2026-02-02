@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Building, GraduationCap, ChevronRight } from 'lucide-react';
+import { GraduationCap, ChevronRight, Building } from 'lucide-react';
 import { cn } from '../utils/cn';
 
 export const LoginPage = ({ onLogin, onBack }: { onLogin: (role: string, email: string, pass: string) => void, onBack: () => void }) => {
