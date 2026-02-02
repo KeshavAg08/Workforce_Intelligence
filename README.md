@@ -175,7 +175,8 @@ Frontend
 cd frontend
 npm install
 npm run dev
-🎯 Project Highlights
+--- 
+### 🎯 Project Highlights
 Not a LinkedIn clone
 
 Not a generic ML dashboard
@@ -185,7 +186,7 @@ Focuses on when hiring will happen
 Bridges industry decisions and student career planning
 
 Fully explainable AI logic
-
+---
 🧠 Future Enhancements
 Real job postings integration
 
@@ -196,7 +197,7 @@ Skill similarity mapping
 Admin analytics
 
 Cloud deployment
-
+---
 📌 License
 This project is for educational and demonstration purposes.
 
