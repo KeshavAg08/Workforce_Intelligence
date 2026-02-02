@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { GraduationCap, Activity, Clock, Lightbulb, RefreshCcw, TrendingUp, Zap, Layout, BarChart3 } from 'lucide-react';
 import { Card, ProgressBar } from '../components/ui/Layout';
 import { cn } from '../utils/cn';
 import type { DashboardData } from '../types';
 
-export const StudentDashboard = ({ data, setIndustry, authenticatedFetch }: { data: DashboardData, setIndustry: (i: string) => void, authenticatedFetch: (url: string, options?: RequestInit) => Promise<Response> }) => {
+export const StudentDashboard = ({ data, setIndustry }: { data: DashboardData, setIndustry: (i: string) => void }) => {
 
 
     if (!data.Student_Insights) return null;
