@@ -163,43 +163,45 @@ Mapped to:
 - Transparent and judge-friendly
 
 ---
+## 🛠️ How to Run Locally
 
-## 🚀 How to Run Locally
+🔹 Backend Setup
 
-### Backend
-```bash
 cd backend
 pip install -r requirements.txt
 uvicorn main:app --reload
-Frontend
+🔹 Frontend Setup
+
 cd frontend
 npm install
 npm run dev
---- 
-### 🎯 Project Highlights
-Not a LinkedIn clone
 
-Not a generic ML dashboard
-
-Focuses on when hiring will happen
-
-Bridges industry decisions and student career planning
-
-Fully explainable AI logic
 ---
-🧠 Future Enhancements
-Real job postings integration
 
-Resume versioning
+## 🎯 Project Highlights
+Unlike generic dashboards, this project focuses on high-impact insights:
 
-Skill similarity mapping
+Specific Utility: Not a LinkedIn clone or a generic ML dashboard.
 
-Admin analytics
+Predictive Power: Focuses specifically on when hiring will happen.
 
-Cloud deployment
+Bridging the Gap: Directly connects industry decisions with student career planning.
+
+Transparency: Built with Fully Explainable AI (XAI) logic so users understand the "why" behind the predictions.
+
+## 🧠 Future Enhancements
+- Real Job Postings: Integration with live job boards.
+
+- Resume Versioning: Track how different resume iterations perform.
+
+- Skill Similarity Mapping: Visualizing how current skills align with market demand.
+
+- Admin Analytics: Insights for institutional or platform administrators.
+
+- Cloud Deployment: Moving from local hosting to AWS/GCP/Azure.
 ---
-📌 License
+## 📌 License
 This project is for educational and demonstration purposes.
 
-🙌 Author
-Keshav Agarwal
+## 🙌 Author
+Keshav Agarwal.
