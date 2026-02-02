@@ -168,12 +168,17 @@ Mapped to:
 🔹 Backend Setup
 
 cd backend
+
 pip install -r requirements.txt
+
 uvicorn main:app --reload
+
 🔹 Frontend Setup
 
 cd frontend
+
 npm install
+
 npm run dev
 
 ---
@@ -204,4 +209,4 @@ Transparency: Built with Fully Explainable AI (XAI) logic so users understand th
 This project is for educational and demonstration purposes.
 
 ## 🙌 Author
-Keshav Agarwal.
+Keshav Agarwal
