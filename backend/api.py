@@ -104,7 +104,9 @@ def get_jobs(
 ):
     # Student focused but safe for both
     jobs_data = resume_logic.load_jobs()
-    jobs = jobs_data.get(industry, [])
+    raw_jobs = jobs_data.get(industry, [])
+    # Return only titles for the frontend dropdown
+    jobs = [j['title'] for j in raw_jobs]
     return {"jobs": jobs}
 
 @app.get("/dashboard/{industry}/{year}")
