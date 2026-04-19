@@ -1,8 +1,61 @@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Lightbulb, Activity, Zap, Users, TrendingUp, Layout, Clock, Briefcase, RefreshCcw, BarChart3, GraduationCap } from 'lucide-react';
+import { Lightbulb, Activity, Zap, Users, TrendingUp, Layout, Clock, Briefcase, RefreshCcw, BarChart3, GraduationCap, Shield, AlertTriangle, ArrowDown, ArrowUp, Minus } from 'lucide-react';
 import { Card, ProgressBar } from '../components/ui/Layout';
 import { WhatIfSimulation } from '../components/simulation/WhatIfSimulation';
-import type { DashboardData } from '../types';
+import type { DashboardData, RiskFactor } from '../types';
+
+const impactConfig = {
+    negative: { color: 'from-rose-500 to-red-500', bg: 'bg-rose-500/10', text: 'text-rose-400', border: 'border-rose-500/20', icon: ArrowUp, label: 'Increases Risk' },
+    positive: { color: 'from-emerald-500 to-green-500', bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20', icon: ArrowDown, label: 'Reduces Risk' },
+    neutral:  { color: 'from-slate-400 to-zinc-500', bg: 'bg-slate-500/10', text: 'text-slate-400', border: 'border-slate-500/20', icon: Minus, label: 'Baseline' },
+};
+
+const RiskFactorRow = ({ factor, index }: { factor: RiskFactor; index: number }) => {
+    const config = impactConfig[factor.impact];
+    const ImpactIcon = config.icon;
+    
+    return (
+        <div
+            className="group relative p-5 rounded-2xl border transition-all duration-300 hover:scale-[1.01] hover:shadow-lg"
+            style={{
+                borderColor: `rgba(255,255,255,0.06)`,
+                background: `rgba(255,255,255,0.02)`,
+                animationDelay: `${index * 100}ms`,
+            }}
+        >
+            <div className="flex items-start justify-between gap-4 mb-4">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className={`p-2 rounded-xl ${config.bg} shrink-0`}>
+                        <ImpactIcon className={`w-4 h-4 ${config.text}`} />
+                    </div>
+                    <div className="min-w-0">
+                        <h4 className="font-bold text-white text-sm">{factor.name}</h4>
+                        <p className="text-xs text-white/40 mt-0.5 truncate">{factor.description}</p>
+                    </div>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${config.bg} ${config.text} border ${config.border}`}>
+                        {config.label}
+                    </span>
+                    <span className="text-2xl font-black text-white tabular-nums">
+                        {factor.contribution.toFixed(1)}%
+                    </span>
+                </div>
+            </div>
+            {/* Contribution bar */}
+            <div className="h-2 w-full bg-white/[0.04] rounded-full overflow-hidden">
+                <div
+                    className={`h-full rounded-full bg-gradient-to-r ${config.color} transition-all duration-1000 ease-out`}
+                    style={{ width: `${Math.min(factor.contribution, 100)}%` }}
+                />
+            </div>
+            <div className="flex justify-between items-center mt-2">
+                <span className="text-xs text-white/30">Raw Value: <span className="font-mono text-white/50">{factor.value}</span></span>
+                <span className="text-xs text-white/30">of total risk</span>
+            </div>
+        </div>
+    );
+};
 
 export const AdminDashboard = ({ data, year }: { data: DashboardData, year: number }) => {
     return (
@@ -76,6 +129,62 @@ export const AdminDashboard = ({ data, year }: { data: DashboardData, year: numb
                     />
                 </Card>
             </div>
+
+            {/* Risk Factor Breakdown */}
+            {data.Risk_Factors && (
+                <Card className="p-8 relative overflow-hidden">
+                    {/* Subtle background glow */}
+                    <div className="absolute -top-24 -right-24 w-64 h-64 bg-gradient-to-br from-pink-500/10 to-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+                    <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-gradient-to-br from-rose-500/8 to-orange-500/8 rounded-full blur-3xl pointer-events-none" />
+                    
+                    <div className="relative">
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-8">
+                            <div className="flex items-center gap-4">
+                                <div className="relative">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-pink-500 to-rose-500 blur-lg opacity-30 animate-pulse" />
+                                    <div className="relative p-3 bg-gradient-to-br from-pink-500 to-rose-500 rounded-2xl shadow-xl shadow-pink-500/20">
+                                        <Shield className="w-6 h-6 text-white" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-xl text-white">Risk Factor Breakdown</h3>
+                                    <p className="text-sm text-white/40 mt-0.5">What's driving the <span className="text-pink-400 font-semibold">{data.Metrics.Workforce_Risk_Score.toFixed(1)}</span> risk score</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.04] rounded-xl border border-white/[0.06]">
+                                <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                                <span className="text-xs font-medium text-white/50">
+                                    Driven by {data.Risk_Factors.dominant_driver === 'core_risk' ? 'supply-demand dynamics' : 'market floor conditions'}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Factor rows */}
+                        <div className="space-y-3">
+                            {data.Risk_Factors.factors.map((factor, index) => (
+                                <RiskFactorRow key={factor.name} factor={factor} index={index} />
+                            ))}
+                        </div>
+
+                        {/* Legend footer */}
+                        <div className="flex items-center justify-center gap-6 mt-6 pt-5 border-t border-white/[0.06]">
+                            <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-rose-500 to-red-500" />
+                                <span className="text-xs text-white/40">Increases Risk</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-500 to-green-500" />
+                                <span className="text-xs text-white/40">Reduces Risk</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-slate-400 to-zinc-500" />
+                                <span className="text-xs text-white/40">Baseline</span>
+                            </div>
+                        </div>
+                    </div>
+                </Card>
+            )}
 
             {data.Hiring_Surge_Timeline && (
                 <Card className="relative overflow-hidden border border-orange-500/30">
@@ -222,3 +331,4 @@ export const AdminDashboard = ({ data, year }: { data: DashboardData, year: numb
         </div>
     );
 };
+

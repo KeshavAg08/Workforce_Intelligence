@@ -29,6 +29,13 @@ dashboard_logic = IndustryDashboard()
 company_logic = CompanyAnalysis()
 resume_logic = ResumeAnalyzer()
 
+@app.on_event("startup")
+def warmup_cache():
+    """Pre-compute and cache all data on server start for instant responses."""
+    print("Pre-warming data cache...")
+    dashboard_logic._prepare_data()
+    print("Cache warmed. Server ready for instant responses.")
+
 @app.get("/")
 def read_root():
     return {"status": "ok", "message": "Industry Dashboard API is running"}

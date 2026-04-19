@@ -15,6 +15,7 @@ class IndustryDashboard:
         self.models = {}
         self.future_years = [2027, 2028, 2029]
         self.normalization_bounds = {}
+        self._cached_full_df = None
 
     def load_data(self):
         if self.data is not None:
@@ -156,6 +157,165 @@ class IndustryDashboard:
         else:
             return "High Risk"
 
+    def get_risk_factors(self, row):
+        """
+        Decompose the risk score into its individual contributing factors.
+        Returns a list of factor objects with name, value, contribution, and impact.
+        
+        The risk formula is:
+          core_risk = (Demand - Supply) + (Attrition × 15)
+          dynamic_baseline = 5 + (Attrition × 10) + (Demand_Trend × 0.5)
+          Risk_Score = max(core_risk, dynamic_baseline)
+        """
+        BASE_RISK = 5
+        ATTRITION_FACTOR = 10
+        TREND_FACTOR = 0.5
+        ATTRITION_WEIGHT = 15
+        
+        demand = row['Talent_Demand_Score']
+        supply = row['Talent_Supply_Score']
+        attrition = row['Attrition_Rate']
+        demand_trend = row.get('Demand_Trend', 0)
+        growth = row['Growth_Rate']
+        risk_score = row['Risk_Score']
+        
+        # Calculate individual component contributions
+        supply_demand_gap = demand - supply
+        attrition_impact = attrition * ATTRITION_WEIGHT
+        
+        # Core risk path
+        core_risk = supply_demand_gap + attrition_impact
+        
+        # Dynamic baseline path
+        baseline_attrition = attrition * ATTRITION_FACTOR
+        baseline_trend = demand_trend * TREND_FACTOR
+        dynamic_baseline = max(BASE_RISK + baseline_attrition + baseline_trend, BASE_RISK)
+        
+        # Which path won?
+        is_baseline_driven = dynamic_baseline > core_risk
+        
+        # Calculate all raw magnitudes first for proportional contribution
+        raw_magnitudes = {
+            'gap': abs(supply_demand_gap),
+            'attrition': attrition_impact,
+            'trend': abs(demand_trend * TREND_FACTOR),
+            'growth': abs(growth * 100),
+            'base': BASE_RISK
+        }
+        total_magnitude = sum(raw_magnitudes.values()) or 1  # prevent div-by-zero
+        
+        factors = []
+        
+        # 1. Supply-Demand Gap
+        gap_pct = raw_magnitudes['gap'] / total_magnitude * 100
+        if supply_demand_gap > 0:
+            impact = "negative"
+            desc = f"Demand ({demand:.1f}) exceeds supply ({supply:.1f}), creating talent shortage pressure"
+        elif supply_demand_gap < -10:
+            impact = "positive"
+            desc = f"Supply ({supply:.1f}) comfortably exceeds demand ({demand:.1f}), reducing risk"
+        else:
+            impact = "neutral"
+            desc = f"Supply ({supply:.1f}) and demand ({demand:.1f}) are roughly balanced"
+        
+        factors.append({
+            "name": "Supply-Demand Gap",
+            "value": round(supply_demand_gap, 2),
+            "contribution": round(gap_pct, 1),
+            "impact": impact,
+            "description": desc
+        })
+        
+        # 2. Attrition Impact
+        attr_pct = raw_magnitudes['attrition'] / total_magnitude * 100
+        if attrition > 0.18:
+            impact = "negative"
+            desc = f"High attrition rate ({attrition*100:.1f}%) is aggressively draining the workforce"
+        elif attrition > 0.12:
+            impact = "negative"
+            desc = f"Moderate attrition ({attrition*100:.1f}%) creates steady replacement demand"
+        elif attrition < 0.05:
+            impact = "positive"
+            desc = f"Very low attrition ({attrition*100:.1f}%) indicates strong workforce retention"
+        else:
+            impact = "neutral"
+            desc = f"Normal attrition levels ({attrition*100:.1f}%) with manageable turnover"
+        
+        factors.append({
+            "name": "Attrition Impact",
+            "value": round(attrition_impact, 2),
+            "contribution": round(attr_pct, 1),
+            "impact": impact,
+            "description": desc
+        })
+        
+        # 3. Demand Momentum
+        trend_contribution = abs(demand_trend * TREND_FACTOR)
+        trend_pct = raw_magnitudes['trend'] / total_magnitude * 100
+        if demand_trend > 10:
+            impact = "negative"
+            desc = f"Rapidly accelerating demand (+{demand_trend:.1f} pts) is intensifying hiring pressure"
+        elif demand_trend > 0:
+            impact = "negative"
+            desc = f"Growing demand trend (+{demand_trend:.1f} pts) adds incremental pressure"
+        elif demand_trend < -10:
+            impact = "positive"
+            desc = f"Declining demand ({demand_trend:.1f} pts) is easing workforce pressure"
+        else:
+            impact = "neutral"
+            desc = f"Stable demand momentum ({demand_trend:.1f} pts) with no significant shift"
+        
+        factors.append({
+            "name": "Demand Momentum",
+            "value": round(demand_trend, 2),
+            "contribution": round(trend_pct, 1),
+            "impact": impact,
+            "description": desc
+        })
+        
+        # 4. Industry Growth Pressure
+        # Growth indirectly drives demand. Higher growth = more positions needed.
+        growth_pressure = growth * 100  # Convert to percentage scale for readability
+        if growth > 0.08:
+            impact = "negative"
+            desc = f"High growth rate ({growth*100:.1f}%) is creating rapid expansion demand"
+        elif growth > 0.04:
+            impact = "neutral"
+            desc = f"Moderate growth ({growth*100:.1f}%) maintains steady expansion needs"
+        elif growth < 0:
+            impact = "positive"
+            desc = f"Industry contraction ({growth*100:.1f}%) reduces new position creation"
+        else:
+            impact = "neutral"
+            desc = f"Low growth ({growth*100:.1f}%) creating minimal expansion pressure"
+        
+        factors.append({
+            "name": "Growth Pressure",
+            "value": round(growth_pressure, 2),
+            "contribution": round(raw_magnitudes['growth'] / total_magnitude * 100, 1),
+            "impact": impact,
+            "description": desc
+        })
+        
+        # 5. Base Market Risk
+        base_pct = raw_magnitudes['base'] / total_magnitude * 100
+        factors.append({
+            "name": "Base Market Risk",
+            "value": BASE_RISK,
+            "contribution": round(base_pct, 1),
+            "impact": "neutral",
+            "description": "Minimum systemic risk floor inherent to all industries"
+        })
+        
+        # Sort by contribution descending
+        factors.sort(key=lambda f: f["contribution"], reverse=True)
+        
+        return {
+            "factors": factors,
+            "dominant_driver": "baseline_floor" if is_baseline_driven else "core_risk",
+            "risk_score": round(risk_score, 2)
+        }
+
     def train_models(self):
         if self.models:
             return
@@ -295,17 +455,22 @@ class IndustryDashboard:
         return f"{risk_level}{year_ctx} detected. {reason_str.capitalize()}."
 
     def _prepare_data(self):
+        if self._cached_full_df is not None:
+            return self._cached_full_df
         self.load_data()
         self.train_models()
         future_df = self.predict_future()
         full_df = pd.concat([self.data, future_df], ignore_index=True)
         full_df = full_df.sort_values(by=['Industry', 'Year'])
         full_df = self.calculate_scores(full_df)
+        self._cached_full_df = full_df
         return full_df
 
     def get_company_summaries(self, industry, target_year):
         from company_analysis import CompanyAnalysis
-        ca = CompanyAnalysis(dashboard=self)
+        if not hasattr(self, '_company_analysis'):
+            self._company_analysis = CompanyAnalysis(dashboard=self)
+        ca = self._company_analysis
         all_companies = ca.companies.get(industry, [])
         
         # Get comparison results for all companies essentially
@@ -376,6 +541,7 @@ class IndustryDashboard:
             },
             "Hiring_Surge_Timeline": self.get_hiring_surge(row, prev_row),
             "AI_Explanation": self.generate_explanation(row),
+            "Risk_Factors": self.get_risk_factors(row),
             "Supply_Demand_Trend": trend_data,
             "Simulation_Context": {
                 "Supply_P5": round(self.normalization_bounds[target_industry]['supply'][0], 2),

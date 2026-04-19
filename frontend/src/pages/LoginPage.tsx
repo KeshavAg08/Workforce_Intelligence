@@ -2,12 +2,22 @@ import { useState } from 'react';
 import { GraduationCap, ChevronRight, Building } from 'lucide-react';
 import { cn } from '../utils/cn';
 
-export const LoginPage = ({ onLogin, onBack }: { onLogin: (role: string, email: string, pass: string) => void, onBack: () => void }) => {
+export const LoginPage = ({ onLogin, onBack }: { onLogin: (role: string, email: string, pass: string) => Promise<void> | void, onBack: () => void }) => {
     const [isRightPanelActive, setIsRightPanelActive] = useState(false);
     const [industryEmail, setIndustryEmail] = useState("");
     const [industryPass, setIndustryPass] = useState("");
     const [studentEmail, setStudentEmail] = useState("");
     const [studentPass, setStudentPass] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleSubmit = async (role: string, email: string, pass: string) => {
+        setIsLoading(true);
+        try {
+            await onLogin(role, email, pass);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <div className="min-h-screen flex items-center justify-center p-6 bg-[#0f0a1e] relative overflow-hidden font-sans text-foreground">
@@ -31,7 +41,7 @@ export const LoginPage = ({ onLogin, onBack }: { onLogin: (role: string, email: 
             <div className={cn("auth-container shadow-2xl shadow-purple-900/20", isRightPanelActive && "right-panel-active mx-auto")}>
                 {/* Industry Login Form */}
                 <div className={cn("auth-form-container left-0", !isRightPanelActive ? "opacity-100 z-[2] translate-x-0" : "opacity-0 z-[1] translate-x-[-20%]")}>
-                    <form className="w-full max-w-[340px] text-center" onSubmit={(e) => { e.preventDefault(); onLogin('industry', industryEmail, industryPass); }}>
+                    <form className="w-full max-w-[340px] text-center" onSubmit={(e) => { e.preventDefault(); handleSubmit('industry', industryEmail, industryPass); }}>
                         <div className="w-20 h-20 bg-gradient-to-br from-purple-500/20 to-indigo-500/20 rounded-3xl flex items-center justify-center mx-auto mb-8 border border-white/10 shadow-xl shadow-purple-500/10 backdrop-blur-sm group hover:scale-105 transition-transform duration-500">
                             <Building className="w-10 h-10 text-purple-400 drop-shadow-md" />
                         </div>
@@ -55,8 +65,12 @@ export const LoginPage = ({ onLogin, onBack }: { onLogin: (role: string, email: 
                             </div>
                         </div>
 
-                        <button className="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black uppercase tracking-widest text-xs shadow-lg shadow-purple-600/20 hover:shadow-purple-600/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 relative overflow-hidden group">
-                            <span className="relative z-10">Sign In</span>
+                        <button disabled={isLoading} className="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black uppercase tracking-widest text-xs shadow-lg shadow-purple-600/20 hover:shadow-purple-600/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 relative overflow-hidden group disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100">
+                            <span className="relative z-10 flex items-center justify-center gap-2">
+                                {isLoading ? (
+                                    <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Signing In...</>
+                                ) : 'Sign In'}
+                            </span>
                             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                         </button>
                     </form>
@@ -64,7 +78,7 @@ export const LoginPage = ({ onLogin, onBack }: { onLogin: (role: string, email: 
 
                 {/* Student Login Form */}
                 <div className={cn("auth-form-container right-0", isRightPanelActive ? "opacity-100 z-[5] translate-x-0" : "opacity-0 z-[1] translate-x-[20%]")}>
-                    <form className="w-full max-w-[340px] text-center" onSubmit={(e) => { e.preventDefault(); onLogin('student', studentEmail, studentPass); }}>
+                    <form className="w-full max-w-[340px] text-center" onSubmit={(e) => { e.preventDefault(); handleSubmit('student', studentEmail, studentPass); }}>
                         <div className="w-20 h-20 bg-gradient-to-br from-pink-500/20 to-rose-500/20 rounded-3xl flex items-center justify-center mx-auto mb-8 border border-white/10 shadow-xl shadow-pink-500/10 backdrop-blur-sm group hover:scale-105 transition-transform duration-500">
                             <GraduationCap className="w-10 h-10 text-pink-400 drop-shadow-md" />
                         </div>
@@ -88,8 +102,12 @@ export const LoginPage = ({ onLogin, onBack }: { onLogin: (role: string, email: 
                             </div>
                         </div>
 
-                        <button className="w-full py-4 rounded-2xl bg-gradient-to-r from-pink-600 to-rose-600 text-white font-black uppercase tracking-widest text-xs shadow-lg shadow-pink-600/20 hover:shadow-pink-600/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 relative overflow-hidden group">
-                            <span className="relative z-10">Sign In</span>
+                        <button disabled={isLoading} className="w-full py-4 rounded-2xl bg-gradient-to-r from-pink-600 to-rose-600 text-white font-black uppercase tracking-widest text-xs shadow-lg shadow-pink-600/20 hover:shadow-pink-600/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 relative overflow-hidden group disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100">
+                            <span className="relative z-10 flex items-center justify-center gap-2">
+                                {isLoading ? (
+                                    <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Signing In...</>
+                                ) : 'Sign In'}
+                            </span>
                             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                         </button>
                     </form>

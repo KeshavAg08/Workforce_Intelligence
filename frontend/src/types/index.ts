@@ -64,12 +64,27 @@ export interface SimulationContext {
     };
 }
 
+export interface RiskFactor {
+    name: string;
+    value: number;
+    contribution: number;
+    impact: 'positive' | 'negative' | 'neutral';
+    description: string;
+}
+
+export interface RiskFactors {
+    factors: RiskFactor[];
+    dominant_driver: string;
+    risk_score: number;
+}
+
 export interface DashboardData {
     Industry: string;
     Year: number;
     Metrics: Metrics;
     Hiring_Surge_Timeline: string | null;
     AI_Explanation: string;
+    Risk_Factors: RiskFactors;
     Supply_Demand_Trend: TrendData[];
     Student_Insights?: StudentInsights;
     Company_Metrics: CompanySummary[];

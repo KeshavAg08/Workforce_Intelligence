@@ -6,6 +6,7 @@ import json
 class CompanyAnalysis:
     def __init__(self, dashboard=None):
         self.industry_dashboard = dashboard or IndustryDashboard()
+        self._industry_cache = {}  # Cache industry baselines per (industry, year)
         self.companies = {
             "IT": ["MetaSystems", "CyberCloud", "DataPulse", "NexTech", "CloudCore"],
             "Healthcare": ["BioHealth", "MediLife", "NanoCare", "PulseMedical", "LifeStream"],
@@ -14,13 +15,22 @@ class CompanyAnalysis:
             "Finance": ["WealthWise", "SecureBank", "FinFlow", "CapitalOne", "TradeMaster"]
         }
 
+    def _get_industry_baseline(self, industry, year):
+        """Get and cache industry baseline to avoid redundant computation."""
+        cache_key = (industry, year)
+        if cache_key not in self._industry_cache:
+            self._industry_cache[cache_key] = self.industry_dashboard.run_analysis(
+                industry, year, include_companies=False
+            )
+        return self._industry_cache[cache_key]
+
     def get_company_metrics(self, industry, year, company_name):
         """
         Derives deterministic company metrics from industry baselines.
         Uses the company name as a seed for stable scaling factors.
         """
-        # Get industry baseline
-        industry_data = self.industry_dashboard.run_analysis(industry, year, include_companies=False)
+        # Get industry baseline (cached)
+        industry_data = self._get_industry_baseline(industry, year)
         if "error" in industry_data:
             return industry_data
 
