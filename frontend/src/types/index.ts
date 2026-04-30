@@ -3,6 +3,8 @@ export interface Metrics {
     Talent_Demand_Score: number;
     Workforce_Risk_Score: number;
     Risk_Level: string;
+    Model_Accuracy: number;
+    Model_Accuracies?: Record<string, number>;
     Internship_Intake: number;
     Conversion_Rate: number;
     Attrition_Rate: number;
